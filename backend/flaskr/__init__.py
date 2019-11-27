@@ -14,10 +14,18 @@ def paginate_questions(request, selection):
   end = start + QUESTIONS_PER_PAGE
 
   questions = [question.format() for question in selection]
-  # print(questions)
   current_questions = questions[start:end]
 
   return current_questions
+
+def format_categories(categories):
+  formatted_categories = {}
+
+  for categorie in categories:
+    formatted_categories.update({ categorie.id: categorie.type })
+
+  return formatted_categories
+
 
 def create_app(test_config=None):
   # create and configure the app
@@ -43,32 +51,16 @@ def create_app(test_config=None):
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
+  @app.route('/api/categories')
+  def get_categories():
+    categories = Category.query.order_by(Category.id).all()
 
-  @app.route('/api/questions')
-  def retrieve_questions():
-    selection = Question.query.order_by(Question.id).all()
-    current_questions = paginate_questions(request, selection)
-    all_categories = Category.query.order_by(Category.id).all()
-    categories = {}
-
-    for categorie in all_categories:
-      categories.update({ categorie.id: categorie.type })
-
-    # formatted_categories = [categorie.format() for categorie in all_categories]
-
-    print(categories)
-
-    # if len(current_questions) == 0:
+    # if len(categories) == 0: TODO: search how to check if object is empty
     #   abort(404)
 
     return jsonify({
-      'success': True,
-      'questions': current_questions,
-      'total_questions': len(Question.query.all()),
-      'categories': categories,
-      'current_category': None
+      'categories': format_categories(categories)
     })
-
 
   '''
   @TODO: 
@@ -82,6 +74,23 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+
+  @app.route('/api/questions')
+  def retrieve_questions():
+    selection = Question.query.order_by(Question.id).all()
+    current_questions = paginate_questions(request, selection)
+    categories = Category.query.order_by(Category.id).all()
+
+    if len(current_questions) == 0:
+      abort(404)
+
+    return jsonify({
+      'success': True,
+      'questions': current_questions,
+      'total_questions': len(Question.query.all()),
+      'categories': format_categories(categories),
+      'current_category': None
+    })
 
   '''
   @TODO: 
@@ -101,6 +110,25 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+  @app.route('/api/questions', methods=['POST'])
+  def create_questions():
+    try:
+      body = request.get_json()
+
+      question = body.get('question', None)
+      answer = body.get('answer', None)
+      difficulty = body.get('difficulty', None)
+      category = body.get('category', None)
+      
+      new_question = Question(question=question, answer=answer, difficulty=difficulty, category=category)
+      new_question.insert()
+
+      return jsonify({
+        'success': True,
+        'id': new_question.id
+      })
+    except:
+      abort(422)
 
   '''
   @TODO: 
@@ -140,6 +168,22 @@ def create_app(test_config=None):
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+
+  @app.errorhandler(404)
+  def not_found(error):
+    return jsonify({
+      "success": False, 
+      "error": 404,
+      "message": "resource not found"
+      }), 404
+
+  @app.errorhandler(422)
+  def unprocessable(error):
+    return jsonify({
+      "success": False, 
+      "error": 422,
+      "message": "unprocessable"
+      }), 422
   
   return app
 
