@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 
-import '../stylesheets/Search.css';
-
 class Search extends Component {
   state = {
     query: '',
@@ -23,11 +21,11 @@ class Search extends Component {
       <form onSubmit={this.getInfo}>
         <input
           placeholder="Search questions..."
-          className="question-search"
+          className="text-field"
           ref={input => this.search = input}
           onChange={this.handleInputChange}
         />
-        <input type="submit" value="Submit" className="question-search-action"/>
+        <input type="submit" value="Submit" className="button"/>
       </form>
     )
   }

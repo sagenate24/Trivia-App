@@ -11,6 +11,11 @@
 
 .App-header > h1 {
   color: dodgerblue;
+  cursor: pointer;
+}
+
+.App-header > h2 {
+  cursor: pointer;
 }
 
 .App-intro {
@@ -34,11 +39,36 @@ ul {
 form {
   display: flex;
   flex-direction: column;
-  width: 80%;
   margin: auto;
 }
 
-.success-message {
-  background-color: lightgreen;
-  padding: 1px 30px;
+.button {
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+  margin-top: 5px;
+  background-color: dodgerblue;
+  color: white;
+  padding: 10px;
+  align-self: center;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.text-field {
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid lightgray;
+  margin-bottom: 10px;
+}
+
+.select-field {
+  cursor: pointer;
+  font-size: 18px;
+  height: 43px;
+  border-radius: 4px;
+  border: 1px solid lightgray;
+  background-color: white;
+  margin-bottom: 10px;
 }

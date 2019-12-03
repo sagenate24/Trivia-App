@@ -25,12 +25,11 @@ class QuizView extends Component {
       url: `/api/categories`, //TODO: update request URL
       type: "GET",
       success: (result) => {
-        console.log(result.categories)
         this.setState({ categories: result.categories })
         return;
       },
       error: (error) => {
-        // alert('Unable to load categories. Please try your request again')
+        alert('Unable to load categories. Please try your request again')
         return;
       }
     })
@@ -125,27 +124,26 @@ class QuizView extends Component {
   renderFinalScore(){
     return(
       <div className="quiz-play-holder">
-        <div className="final-header"> Your Final Score is {this.state.numCorrect}</div>
-        <div className="play-again button" onClick={this.restartGame}> Play Again? </div>
+        <div className="quiz-header"> Your Final Score is: {this.state.numCorrect}</div>
+        <div className="button" onClick={this.restartGame}> Play Again? </div>
       </div>
     )
   }
 
   evaluateAnswer = () => {
     const formatGuess = this.state.guess.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
-    const answerArray = this.state.currentQuestion.answer.toLowerCase().split(' ');
+    const answerArray = this.state.currentQuestion.answer.toLowerCase()
     return answerArray.includes(formatGuess)
   }
 
   renderCorrectAnswer(){
-    const formatGuess = this.state.guess.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
     let evaluate =  this.evaluateAnswer()
     return(
       <div className="quiz-play-holder">
-        <div className="quiz-question">{this.state.currentQuestion.question}</div>
+        <div className="quiz-header">{this.state.currentQuestion.question}</div>
         <div className={`${evaluate ? 'correct' : 'wrong'}`}>{evaluate ? "You were correct!" : "You were incorrect"}</div>
         <div className="quiz-answer">{this.state.currentQuestion.answer}</div>
-        <div className="next-question button" onClick={this.getNextQuestion}> Next Question </div>
+        <div className="button" onClick={this.getNextQuestion}> Next Question </div>
       </div>
     )
   }
@@ -157,10 +155,17 @@ class QuizView extends Component {
         ? this.renderCorrectAnswer()
         : (
           <div className="quiz-play-holder">
-            <div className="quiz-question">{this.state.currentQuestion.question}</div>
+            <div className="quiz-header">{this.state.currentQuestion.question}</div>
             <form onSubmit={this.submitGuess}>
-              <input type="text" name="guess" onChange={this.handleChange}/>
-              <input className="submit-guess button" type="submit" value="Submit Answer" />
+              <input
+                className="text-field"
+                type="text"
+                name="guess"
+                onChange={this.handleChange}/>
+              <input
+                className="button"
+                type="submit"
+                value="Submit Answer" />
             </form>
           </div>
         )

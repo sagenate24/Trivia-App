@@ -9,8 +9,8 @@ class FormView extends Component {
     this.state = {
       question: "",
       answer: "",
-      difficulty: 1,
-      category: 1,
+      difficulty: null,
+      category: null,
       categories: {},
       questionCreateSuccess: false
     }
@@ -75,8 +75,8 @@ class FormView extends Component {
     this.setState({
       question: "",
       answer: "",
-      difficulty: 1,
-      category: 1,
+      difficulty: null,
+      category: null,
     })
   }
 
@@ -90,35 +90,46 @@ class FormView extends Component {
         </div>
         <h2>Add a New Trivia Question</h2>
         <form className="form-view" id="add-question-form" onSubmit={this.submitQuestion}>
-          <label>
-            Question
-            <input type="text" name="question" onChange={this.handleChange}/>
-          </label>
-          <label>
-            Answer
-            <input type="text" name="answer" onChange={this.handleChange}/>
-          </label>
-          <label>
-            Difficulty
-            <select name="difficulty" onChange={this.handleChange}>
+          <input
+            className="text-field"
+            type="text"
+            name="question"
+            placeholder="Question"
+            onInput={this.handleChange}/>
+          <input
+            className="text-field"
+            type="text"
+            name="answer"
+            placeholder="Answer"
+            onInput={this.handleChange}/>
+            <select
+              className="select-field"
+              name="difficulty"
+              onChange={this.handleChange}
+              defaultValue={'DEFAULT'}>
+              <option disabled value='DEFAULT'>Select Difficulty</option>
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
               <option value="4">4</option>
               <option value="5">5</option>
             </select>
-          </label>
-          <label>
-            Category
-            <select name="category" onChange={this.handleChange}>
+            <select
+              className="select-field"
+              name="category"
+              onChange={this.handleChange}
+              defaultValue={'DEFAULT'}>
+              <option disabled value='DEFAULT'>Select Category</option>
               {Object.keys(this.state.categories).map(id => {
                   return (
                     <option key={id} value={id}>{this.state.categories[id]}</option>
                   )
                 })}
             </select>
-          </label>
-          <input type="submit" className="button" value="Submit" />
+          <input
+            type="submit"
+            className="button"
+            value="Submit" />
         </form>
       </div>
     );

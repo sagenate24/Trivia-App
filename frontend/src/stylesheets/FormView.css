@@ -1,7 +1,17 @@
-.form-view > label {
-  padding: 0px 0px 10px;
+.form-view {
+  max-width: 600px;
 }
 
 #add-form {
   text-align: center;
+}
+
+.success-message {
+  background-color: green;
+  padding: 1px 30px;
+}
+
+.success-message p {
+  color: white;
+  font-size: 18px;
 }
