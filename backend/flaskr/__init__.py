@@ -81,8 +81,9 @@ def create_app(test_config=None):
 
   @app.route('/api/questions')
   def retrieve_questions():
-    selection = Question.query.order_by(Question.id).all()
-    current_questions = paginate_questions(request, selection)
+    # Get a paginated list of questions and foramyt all categories correctly
+    questions = Question.query.order_by(Question.id).all()
+    current_questions = paginate_questions(request, questions)
     categories = Category.query.order_by(Category.id).all()
 
     if len(current_questions) == 0:
@@ -106,6 +107,7 @@ def create_app(test_config=None):
   @app.route('/api/questions/<int:question_id>', methods=['DELETE'])
   def delete_question(question_id):
     try:
+      # Grab question by id to delete
       question = Question.query.get(question_id)
 
       if question is None:
@@ -143,6 +145,7 @@ def create_app(test_config=None):
     if any(arg is None for arg in arguments) or '' in arguments:
       abort(400)
 
+    # Create and insert a new question
     new_question = Question(question=question, answer=answer, difficulty=difficulty, category=category)
     new_question.insert()
 
@@ -166,7 +169,9 @@ def create_app(test_config=None):
   def search_questions():
     body = request.get_json()
     formatted_search_term = "%{}%".format(body.get('search_term', None))
+    # Get all questions that match the formatted search term
     all_questions = Question.query.filter(Question.question.ilike(formatted_search_term)).all()
+    # Paginate queried questions
     questions_paginated = paginate_questions(request, all_questions)
 
     return jsonify({
@@ -191,7 +196,9 @@ def create_app(test_config=None):
     if current_category is None:
       abort(404)
 
+    # Get list of questions by category id
     questions_by_category = Question.query.filter_by(category=category_id).all()
+    # Paginate questions
     questions_paginated = paginate_questions(request, questions_by_category)
 
     return jsonify({
