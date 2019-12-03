@@ -3,11 +3,13 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+import sys
 
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+# Get a list of paginated questions
 def paginate_questions(request, selection):
   page = request.args.get('page', 1, type=int)
   start =  (page - 1) * QUESTIONS_PER_PAGE
@@ -60,6 +62,7 @@ def create_app(test_config=None):
       abort(404)
 
     return jsonify({
+      'success': True,
       'categories': format_categories(categories)
     })
 
@@ -107,15 +110,15 @@ def create_app(test_config=None):
 
       if question is None:
         abort(404)
-
+      
       question.delete()
 
       return jsonify({
         'success': True,
         'id': question_id
-      }) 
+      })
     except:
-      abort(424)
+      abort(422)
   '''
   @TODO: 
   Create an endpoint to POST a new question, 
@@ -128,23 +131,25 @@ def create_app(test_config=None):
   '''
   @app.route('/api/questions', methods=['POST'])
   def create_questions():
-    try:
-      body = request.get_json()
+    body = request.get_json()
 
-      question = body.get('question', None)
-      answer = body.get('answer', None)
-      difficulty = body.get('difficulty', None)
-      category = body.get('category', None)
-      
-      new_question = Question(question=question, answer=answer, difficulty=difficulty, category=category)
-      new_question.insert()
+    question = body.get('question', None)
+    answer = body.get('answer', None)
+    difficulty = body.get('difficulty', None)
+    category = body.get('category', None)
 
-      return jsonify({
-        'success': True,
-        'id': new_question.id
-      })
-    except:
-      abort(422)
+    arguments = [question, answer, difficulty, category]
+    # abort with status 400 if any fields are None or empty strings
+    if any(arg is None for arg in arguments) or '' in arguments:
+      abort(400)
+
+    new_question = Question(question=question, answer=answer, difficulty=difficulty, category=category)
+    new_question.insert()
+
+    return jsonify({
+      'success': True,
+      'id': new_question.id
+    })
 
   '''
   @TODO: 
@@ -169,6 +174,7 @@ def create_app(test_config=None):
       'total_questions': len(all_questions),
       'current_category': None
     })
+
 
   '''
   @TODO: 
@@ -211,8 +217,15 @@ def create_app(test_config=None):
     prev_questions = body.get('previous_questions', None)
     quiz_category = body.get('quiz_category', None)
 
+    if (quiz_category['id'] == 0):
+      # Get all questions if the category id is 0 (all categories)
+      questions_by_category = Question.query.all()
+    else:
     # Get list of questions by the quiz category id
-    questions_by_category = Question.query.filter_by(category=quiz_category['id']).all()
+      questions_by_category = Question.query.filter_by(category=quiz_category['id']).all()
+
+    if len(questions_by_category) == 0:
+      abort(404)
     # Format questions into JSON format
     formatted_questions = [question.format() for question in questions_by_category]
 
@@ -251,7 +264,7 @@ def create_app(test_config=None):
     return jsonify({
       "success": False, 
       "error": 404,
-      "message": "resource not found"
+      "message": "Resource Not Found"
       }), 404
 
   @app.errorhandler(422)
@@ -259,15 +272,15 @@ def create_app(test_config=None):
     return jsonify({
       "success": False, 
       "error": 422,
-      "message": "unprocessable"
-      }), 422
+      "message": "Not Processable"
+    }), 422
   
   @app.errorhandler(400)
   def bad_request(error):
     return jsonify({
       "success": False, 
       "error": 400,
-      "message": "bad request"
-      }), 400
+      "message": "Bad Request"
+    }), 400
   
   return app

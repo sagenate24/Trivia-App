@@ -11,7 +11,8 @@ class FormView extends Component {
       answer: "",
       difficulty: 1,
       category: 1,
-      categories: {}
+      categories: {},
+      questionCreateSuccess: false
     }
   }
 
@@ -24,7 +25,7 @@ class FormView extends Component {
         return;
       },
       error: (error) => {
-        // alert('Unable to load categories. Please try your request again')
+        alert('Unable to load categories. Please try your request again')
         return;
       }
     })
@@ -32,6 +33,7 @@ class FormView extends Component {
 
 
   submitQuestion = (event) => {
+    this.setState({ questionCreateSuccess: false })
     event.preventDefault();
     $.ajax({
       url: '/api/questions', //TODO: update request URL
@@ -49,11 +51,17 @@ class FormView extends Component {
       },
       crossDomain: true,
       success: (result) => {
+        this.setState({ questionCreateSuccess: true })
+        this.resetLocalState()
         document.getElementById("add-question-form").reset();
         return;
       },
       error: (error) => {
-        // alert('Unable to add question. Please try your request again')
+        if (error.status === 400) {
+          alert('Please make sure to fill out all fields')  
+        } else {
+          alert('Unable to add question. Please try your request again')
+        }
         return;
       }
     })
@@ -63,9 +71,23 @@ class FormView extends Component {
     this.setState({[event.target.name]: event.target.value})
   }
 
+  resetLocalState = () => {
+    this.setState({
+      question: "",
+      answer: "",
+      difficulty: 1,
+      category: 1,
+    })
+  }
+
   render() {
     return (
       <div id="add-form">
+        <div
+          style={{"visibility": this.state.questionCreateSuccess ? 'visible' : 'hidden'}}
+          className="success-message">
+          <p>Question successfully created!</p>
+        </div>
         <h2>Add a New Trivia Question</h2>
         <form className="form-view" id="add-question-form" onSubmit={this.submitQuestion}>
           <label>

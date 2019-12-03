@@ -34,7 +34,7 @@ class QuestionView extends Component {
         return;
       },
       error: (error) => {
-        // alert('Unable to load questions. Please try your request again')
+        alert('Unable to load questions. Please try your request again')
         return;
       }
     })
@@ -70,7 +70,7 @@ class QuestionView extends Component {
         return;
       },
       error: (error) => {
-        // alert('Unable to load questions. Please try your request again')
+        alert('Unable to load questions. Please try your request again')
         return;
       }
     })
@@ -95,7 +95,7 @@ class QuestionView extends Component {
         return;
       },
       error: (error) => {
-        // alert('Unable to load questions. Please try your request again')
+        alert('Unable to load questions. Please try your request again')
         return;
       }
     })
@@ -111,7 +111,7 @@ class QuestionView extends Component {
             this.getQuestions();
           },
           error: (error) => {
-            // alert('Unable to load questions. Please try your request again')
+            alert('Unable to load questions. Please try your request again')
             return;
           }
         })
@@ -136,6 +136,7 @@ class QuestionView extends Component {
         </div>
         <div className="questions-list">
           <h2>Questions</h2>
+          <h3>{this.state.questions.length === 0 && 'No results'}</h3>
           {this.state.questions.map((q, ind) => (
             <Question
               key={q.id}

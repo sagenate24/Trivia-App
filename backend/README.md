@@ -66,27 +66,106 @@ One note before you delve into your tasks: for each endpoint you are expected to
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
 9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
-REVIEW_COMMENT
+## API Reference
+
+### Error Handling
+Errors are returned as JSON objects in the following format:
 ```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
+{
+    "success": False, 
+    "error": 400,
+    "message": "bad request"
+}
+```
 
-Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
+The API will return three error types when requests fail:
+- 400: Bad Request
+- 404: Resource Not Found
+- 422: Not Processable 
 
-GET '/categories'
+### Endpoints
+
+#### GET '/api/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
+- Returns: An object with attributes, `success: True` and categories. categories contains a object of id: category_string key:value pairs.
+```
 {'1' : "Science",
 '2' : "Art",
 '3' : "Geography",
 '4' : "History",
 '5' : "Entertainment",
 '6' : "Sports"}
+```
 
+#### GET '/api/questions'
+- Fetches a paginated list of questions based on the page parameter passed. default questions per page is 10.
+- Request Parameters: `page: Number`
+- Returns: An object with 
+```
+{
+  'success': True,
+  'questions': [],
+  'total_questions': Number,
+  'categories': [],
+  'current_category': None
+}
+```
+
+#### DELETE '/api/questions/<int:question_id>'
+- Removes a question from the database by id. 404 will be thrown if their is no question matching the given question_id.
+- Request Parameters: question id slug.
+- Returns: An object with `success: True` and the id of the deleted question
+```
+{
+  'success': True,
+  'id': Number
+}
+```
+
+#### POST '/api/questions'
+- Create a new question. All request arguments are required and will throw a 400 if missing.
+- Request Arguments: { question: String, answer: String, difficulty: Number, category: Number}
+- Returns: An object with `success: True` and the id of the deleted question
+```
+{
+  'success': True,
+  'id': Number
+}
+```
+
+#### POST '/api/questions/search'
+- Search for questions by a search term. the search term is only searching based on the question and not the answer. 404 will be thrown if not found.
+- Request Arguments: { search_term: String }
+- Returns a paginated list of questions and the total number of questions.
+```
+{
+  'questions': [],
+  'total_questions': Number,
+  'current_category': None
+}
+```
+
+#### GET '/api/categories/<int:category_id>/questions'
+- Fetches a paginated list of questions by category id. 404 will be thrown if the id passed does not match a category in the database.
+- Request Parameters: category is slug.
+- Returns the current category type, paginated questions and the total number of questions
+```
+{
+  'questions': [],
+  'total_questions': Number,
+  'current_category': String
+}
+```
+
+#### POST '/api/quizzes'
+- Fetches a random question based on the category and previous questions sent. will return a 404 if their are no questions by the category specified.
+- Request Arguments: { previous_questions: [List of question ids], quiz_category: Number/category_id}.
+- Returns one random question that is not specified in the `previous_questions` list argument. Returns None when the previous_questions list contains all questions for the given category.
+```
+{
+  question: Object -OR- None
+}
 ```
 
 

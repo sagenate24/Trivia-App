@@ -25,6 +25,7 @@ class QuizView extends Component {
       url: `/api/categories`, //TODO: update request URL
       type: "GET",
       success: (result) => {
+        console.log(result.categories)
         this.setState({ categories: result.categories })
         return;
       },
@@ -71,7 +72,7 @@ class QuizView extends Component {
         return;
       },
       error: (error) => {
-        // alert('Unable to load question. Please try your request again')
+        alert('Unable to load question. Please try your request again')
         return;
       }
     })

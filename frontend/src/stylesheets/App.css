@@ -37,3 +37,8 @@ form {
   width: 80%;
   margin: auto;
 }
+
+.success-message {
+  background-color: lightgreen;
+  padding: 1px 30px;
+}
